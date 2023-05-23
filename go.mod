@@ -2,9 +2,14 @@ module github.com/ryanish/ardanlabs_webservices_course
 
 go 1.20
 
-require go.uber.org/zap v1.24.0
+require (
+	github.com/ardanlabs/conf/v3 v3.1.5
+	github.com/ardanlabs/service v0.0.0-20230520151644-fa40ea5c1268
+	go.uber.org/automaxprocs v1.5.2
+	go.uber.org/zap v1.24.0
+)
 
 require (
-	go.uber.org/atomic v1.7.0 // indirect
-	go.uber.org/multierr v1.6.0 // indirect
+	go.uber.org/atomic v1.11.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
 )
