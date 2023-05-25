@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 
 run:
-	go run app/services/sales-api/main.go --help
+	go run app/services/sales-api/main.go | go run app/tooling/logfmt/main.go
 tidy:
 	go mod tidy
 	go mod vendor
@@ -59,7 +59,7 @@ dev-up:
 		--name $(KIND_CLUSTER) \
 		--config zarf/k8s/dev/kind-config.yaml
 
-	kubectl wait --timeout=20s --namespace=local-path-storage --for=condition=Available deployment/local-path-provisioner
+	kubectl wait --timeout=120s --namespace=local-path-storage --for=condition=Available deployment/local-path-provisioner
 
 dev-load:
 	kind load docker-image sales-api:$(VERSION) --name $(KIND_CLUSTER)
@@ -72,7 +72,7 @@ dev-restart:
 	kubectl rollout restart deployment sales --namespace=sales-system
 
 dev-logs:
-	kubectl logs --namespace=sales-system -l app=sales --all-containers=true -f --tail=100 --max-log-requests=6
+	kubectl logs --namespace=sales-system -l app=sales --all-containers=true -f --tail=100 --max-log-requests=6 | go run app/tooling/logfmt/main.go -service=SALES-API
 
 dev-status:
 	kubectl get nodes -o wide
@@ -92,3 +92,6 @@ dev-describe-sales:
 dev-update: all dev-load dev-restart
 
 dev-update-apply: all dev-load dev-apply
+
+dev-teardown:
+	kind delete cluster --name $(KIND_CLUSTER)
