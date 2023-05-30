@@ -25,3 +25,23 @@ spec:
               cpu: "1000m" # up top 2 full corse
             limits:
               cpu: "2000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sales-service
+  namespace: sales-system
+
+spec:
+  selector:
+    app: sales
+
+  type: ClusterIP
+
+  ports:
+    - name: sales-api
+      port: 3000
+      targetPort: sales-api
+    - name: sales-api-debug
+      port: 4000
+      targetPort: sales-api-debug

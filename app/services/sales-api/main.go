@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/ardanlabs/conf/v3"
 	"github.com/ardanlabs/service/foundation/logger"
+	"github.com/ryanish/ardanlabs_webservices_course/business/web/v1/debug"
 	"go.uber.org/automaxprocs/maxprocs"
 	"go.uber.org/zap"
 	"net/http"
@@ -14,7 +15,6 @@ import (
 	"runtime"
 	"syscall"
 	"time"
-	"ultimatego/service/business/web/v1/debug"
 )
 
 var build = "develop"

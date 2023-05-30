@@ -95,3 +95,6 @@ dev-update-apply: all dev-load dev-apply
 
 dev-teardown:
 	kind delete cluster --name $(KIND_CLUSTER)
+
+metrics-view:
+	expvarmon -ports=":4000" -endpoint="/metrics" -vars="build,requests,goroutines,errors,panics,mem:memstats.Alloc"
