@@ -53,13 +53,21 @@ sales:
 KIND            := kindest/node:v1.27.1@sha256:b7d12ed662b873bd8510879c1846e87c7e676a79fefc93e17b2a52989d3ff42b
 KIND_CLUSTER    := ardan-starter-cluster
 
-dev-up:
+TELEPRESENCE := docker.io/datawire/tel2:2.10.4
+
+dev-kind:
 	kind create cluster \
 		--image $(KIND) \
 		--name $(KIND_CLUSTER) \
 		--config zarf/k8s/dev/kind-config.yaml
-
 	kubectl wait --timeout=120s --namespace=local-path-storage --for=condition=Available deployment/local-path-provisioner
+
+	kind load docker-image $(TELEPRESENCE) --name $(KIND_CLUSTER)
+
+	telepresence --context=kind-$(KIND_CLUSTER) helm install
+
+dev-up: dev-kind
+	telepresence --context=kind-$(KIND_CLUSTER) connect
 
 dev-load:
 	kind load docker-image sales-api:$(VERSION) --name $(KIND_CLUSTER)
@@ -93,7 +101,8 @@ dev-update: all dev-load dev-restart
 
 dev-update-apply: all dev-load dev-apply
 
-dev-teardown:
+dev-down:
+	telepresence quit -s
 	kind delete cluster --name $(KIND_CLUSTER)
 
 metrics-view:
