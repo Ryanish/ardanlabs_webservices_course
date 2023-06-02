@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"expvar"
 	"fmt"
 	"github.com/ardanlabs/conf/v3"
 	"github.com/ardanlabs/service/foundation/logger"
@@ -98,11 +97,26 @@ func run(log *zap.SugaredLogger) error {
 
 	// =========================================================================
 
-	expvar.NewString("build").Set(build)
+	log.Infow("startup", "status", "initializing V1 API support")
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
-	<-shutdown
+
+	api := http.Server{
+		Addr:         cfg.Web.APIHost,
+		Handler:      nil,
+		ReadTimeout:  cfg.Web.ReadTimeout,
+		WriteTimeout: cfg.Web.WriteTimeout,
+		IdleTimeout:  cfg.Web.IdleTimeout,
+		ErrorLog:     zap.NewStdLog(log.Desugar()),
+	}
+
+	serverErrors := make(chan error, 1)
+
+	go func() {
+		log.Infow("startup", "status", "api router started", "host", api.Addr)
+		serverErrors <- api.ListenAndServe()
+	}()
 
 	return nil
 }
