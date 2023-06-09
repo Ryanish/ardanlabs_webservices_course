@@ -107,3 +107,10 @@ dev-down:
 
 metrics-view:
 	expvarmon -ports=":4000" -endpoint="/metrics" -vars="build,requests,goroutines,errors,panics,mem:memstats.Alloc"
+
+metrics-view-sc:
+	expvarmon -ports="sales-service.sales-system.svc.cluster.local:4000" -vars="build,requests,goroutines,errors,panics,mem:memstats.Alloc"
+
+
+curl-test:
+	curl -il http://sales-service.sales-system.svc.cluster.local:3000/test
